@@ -3,9 +3,9 @@ import Highcharts from "highcharts";
 import ChartSelector from "./Widgets/ChartSelector";
 import GeoMap from "./Widgets/GeoMap";
 import BasicChart from "./Widgets/BasicChart";
+import HeatMap from "./Widgets/HeatMap";
 
 import "./App.css";
-import HeatMap from "./Widgets/HeatMap";
 
 require("highcharts/modules/map")(Highcharts);
 
