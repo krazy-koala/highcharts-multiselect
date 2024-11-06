@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 
 import { OPACITY, updateChartOpacity } from "./chartOpacityUtils";
 
-const useChartMultiSelect = ({ chartRef, onSelect }) => {
+const emptyFn = () => {};
+
+const useChartMultiSelect = ({
+  chartRef,
+  onHighlightPoints,
+  onClear = emptyFn,
+  onSelect,
+}) => {
   const [selectedPoints, setSelectedPoints] = useState([]);
 
   useEffect(() => {
@@ -13,14 +20,37 @@ const useChartMultiSelect = ({ chartRef, onSelect }) => {
     const { chart, container: containerRef } = chartRef.current;
     const container = containerRef.current;
 
+    const highlightPoints = (points) => {
+      if (onHighlightPoints != null) {
+        onHighlightPoints(chart, points);
+        return;
+      }
+
+      const getOpacity = (point) => {
+        if (points.length === 0) {
+          return OPACITY.MAX;
+        }
+        return points.includes(point) ? OPACITY.MAX : OPACITY.MIN;
+      };
+      updateChartOpacity(chart, getOpacity);
+    };
+
+    const updateSelectedPoints = (points) => {
+      highlightPoints(points);
+      onSelect(points);
+      setSelectedPoints(points);
+    };
+
     const handleClick = (e) => {
-      const clickedPoint = e.point;
+      const { point: clickedPoint, target } = e;
+      if (target.closest(".highcharts-legend-item") != null) {
+        return;
+      }
 
       // If the click wasn't on a point, de-select everything.
       if (clickedPoint == null) {
-        setSelectedPoints([]);
-        updateChartOpacity(chart, () => OPACITY.MAX);
-        onSelect([]);
+        updateSelectedPoints([]);
+        onClear(selectedPoints);
         return;
       }
 
@@ -28,17 +58,7 @@ const useChartMultiSelect = ({ chartRef, onSelect }) => {
       const newSelectedPoints = selectedPoints.includes(clickedPoint)
         ? selectedPoints.filter((point) => point !== clickedPoint)
         : [...selectedPoints, clickedPoint];
-      setSelectedPoints(newSelectedPoints);
-
-      // Update chart opacity based on selected points.
-      const getOpacity = (point) => {
-        if (newSelectedPoints.length === 0) {
-          return OPACITY.MAX;
-        }
-        return newSelectedPoints.includes(point) ? OPACITY.MAX : OPACITY.MIN;
-      }
-      updateChartOpacity(chart, getOpacity);
-      onSelect(newSelectedPoints);
+      updateSelectedPoints(newSelectedPoints);
     };
 
     container.addEventListener("click", handleClick);
@@ -46,7 +66,7 @@ const useChartMultiSelect = ({ chartRef, onSelect }) => {
     return () => {
       container.removeEventListener("click", handleClick);
     };
-  }, [chartRef, onSelect, selectedPoints]);
-}
+  }, [chartRef, onHighlightPoints, onClear, onSelect, selectedPoints]);
+};
 
 export default useChartMultiSelect;
