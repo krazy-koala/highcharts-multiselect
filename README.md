@@ -2,7 +2,7 @@
 
 I currently work on a Big Data visualisation product that provides self-serve functionality to our users (SREs, SAMs, executives, etc..) so they can create their own dashboards to perform data analysis.  These dashboards have many charts, some of which are "linked" together so that a user can select multiple data points in one chart and have that used as a filter for another chart.  Each of these charts have their own custom click logic implemented by different developers.  This makes it challenging to maintain and enhance.
 
-This is a POC I've put together for a generic React hook that can be used to select multiple points with any chart in Highcharts.  It works by attaching a click listener to the container component of a chart along with custom logic that "highlights" the selected points and reduces the contrast of unselected points.  If the provided highlighting functionality does not apply to a specific graph, the developer can provide his own custom implementation.  See diagram below.
+This is a POC I've put together for a generic React hook, useChartMultiSelect, that can be used to select multiple points with any chart in Highcharts.  It works by attaching a click listener to the container component of a chart along with custom logic that "highlights" the selected points and reduces the contrast of unselected points.  If the provided highlighting functionality does not apply to a specific graph, the developer can provide his own custom implementation.  See diagram below for how it would be used within our product.
 
 The 3 charts types that have been tested so far in this project are Bar Chart, Heat Map, and Geo Map.  More to come when I have time :)
 
